@@ -1,0 +1,15 @@
+<div class="page narrow">
+    <h1>Protection checklist</h1>
+    <p class="lead">Tick what you already do. Progress is saved in this browser only.</p>
+    <div class="row" style="margin-bottom:1.5rem">
+        <div class="ring" [style.--v]="pct"><span>{{ pct }}%</span></div>
+        <div><strong>{{ count }} of {{ total }} done</strong><br><button class="ghost" (click)="reset()">Clear
+                all</button></div>
+    </div>
+    <section *ngFor="let g of groups" class="section" style="margin-top:2rem">
+        <h3>{{ g.title }}</h3>
+        <label class="item" *ngFor="let it of g.items" [class.done]="done[it.id]">
+            <input type="checkbox" [checked]="done[it.id]" (change)="toggle(it.id)"> {{ it.text }}
+        </label>
+    </section>
+</div>

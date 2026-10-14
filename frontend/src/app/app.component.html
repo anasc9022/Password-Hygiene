@@ -1,0 +1,21 @@
+<header class="nav">
+  <a routerLink="/" class="brand">
+    <span class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" />
+        <path d="M9 12l2 2 4-4" />
+      </svg>
+    </span>SafeKey
+  </a>
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/lab" routerLinkActive="active">Password Lab</a>
+    <a routerLink="/quiz" routerLinkActive="active">Quiz</a>
+    <a routerLink="/checklist" routerLinkActive="active">Checklist</a>
+    <a routerLink="/pledge" routerLinkActive="active">Pledge</a>
+  </nav>
+</header>
+<router-outlet></router-outlet>
+<footer class="foot">Password Hygiene and Personal Data Protection Campaign. Your passwords never leave your browser.
+</footer>

@@ -1,0 +1,59 @@
+<section class="hero">
+    <div class="hero-in">
+        <div>
+            <h1>One weak password opens every door.</h1>
+            <p>Most account takeovers start with passwords that are short, reused or already leaked. Test yours
+                privately, learn the habits that stop it, then make a pledge.</p>
+            <div class="row">
+                <a routerLink="/lab" class="btn signal">Open the Password Lab</a>
+                <a routerLink="/quiz" class="btn outline-light">Take the quiz</a>
+            </div>
+            <p class="hero-note" *ngIf="pledges">{{ pledges }} people have pledged so far.</p>
+        </div>
+        <div class="live">
+            <label for="demo">Type a made-up password. It never leaves this page.</label>
+            <input id="demo" type="text" spellcheck="false" autocomplete="off" [(ngModel)]="pw"
+                (ngModelChange)="a = analyze(pw)" placeholder="Try: Summer2024!">
+            <div class="meter"><span [style.width.%]="pw ? (a.score + 1) * 20 : 0" [ngClass]="'s' + a.score"></span>
+            </div>
+            <div class="meter-meta"><strong>{{ pw ? a.label : 'Waiting for input' }}</strong><span *ngIf="pw">Cracked in
+                    {{ a.crackTime }}</span></div>
+        </div>
+    </div>
+</section>
+
+<div class="page">
+    <nav class="links" aria-label="Campaign sections">
+        <a routerLink="/lab">
+            <h3>Password Lab</h3>
+            <p>Test strength, check breaches, generate passwords.</p>
+        </a>
+        <a routerLink="/quiz">
+            <h3>Quiz</h3>
+            <p>Six questions on passwords, MFA and phishing.</p>
+        </a>
+        <a routerLink="/checklist">
+            <h3>Checklist</h3>
+            <p>Track the protections you have in place.</p>
+        </a>
+        <a routerLink="/pledge">
+            <h3>Pledge</h3>
+            <p>Commit to the habits that matter.</p>
+        </a>
+    </nav>
+
+    <section class="section">
+        <h2>Habits that make the difference</h2>
+        <div class="row chips">
+            <button class="chip" *ngFor="let c of cats" [class.on]="c === cat" (click)="cat = c">{{ c }}</button>
+        </div>
+        <p *ngIf="error" class="notice bad">Cannot reach the API. Start the Spring Boot server on port 8080.</p>
+        <article class="tiprow" *ngFor="let t of shown">
+            <span class="cat">{{ t.category }}</span>
+            <div>
+                <h3>{{ t.title }}</h3>
+                <p class="muted">{{ t.body }}</p>
+            </div>
+        </article>
+    </section>
+</div>

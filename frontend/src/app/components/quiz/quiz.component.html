@@ -1,0 +1,31 @@
+<div class="page narrow">
+    <h1>Knowledge quiz</h1>
+    <p class="lead">Six questions. Answers are checked by the server after you finish.</p>
+    <p *ngIf="error" class="notice bad">Cannot reach the API. Start the Spring Boot server on port 8080.</p>
+
+    <section class="panel" *ngIf="qs.length && !result">
+        <div class="progress"><span [style.width.%]="(i / qs.length) * 100"></span></div>
+        <p class="muted">Question {{ i + 1 }} of {{ qs.length }}</p>
+        <h3>{{ qs[i].question }}</h3>
+        <button class="option" *ngFor="let o of qs[i].options; let k = index" [class.sel]="answers[i] === k"
+            (click)="answers[i] = k">{{ o }}</button>
+        <div class="row between">
+            <button class="ghost" [disabled]="i === 0" (click)="i = i - 1">Back</button>
+            <button class="btn" [disabled]="answers[i] === undefined" (click)="next()">{{ i === qs.length - 1 ? 'See my
+                score' : 'Next question' }}</button>
+        </div>
+    </section>
+
+    <section class="panel" *ngIf="result">
+        <div class="row">
+            <div class="ring" [style.--v]="pct"><span>{{ result.score }}/{{ result.total }}</span></div>
+            <div>
+                <h2>{{ headline }}</h2><button class="btn" (click)="load()">Retake quiz</button>
+            </div>
+        </div>
+        <div class="fb" *ngFor="let f of result.feedback; let n = index" [class.right]="f.correct">
+            <b>{{ f.correct ? 'Correct' : 'Review' }}: {{ qs[n].question }}</b>
+            <p class="muted">Answer: {{ qs[n].options[f.correctIndex] }}. {{ f.explanation }}</p>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,28 @@
+<div class="page narrow">
+    <h1>Make your pledge</h1>
+    <p class="lead">Choose the habits you will commit to. We store a nickname and your choices, nothing else. No email,
+        no IP address.</p>
+
+    <section class="panel" *ngIf="!sent">
+        <label for="nick"><strong>Nickname</strong></label>
+        <div class="field"><input id="nick" class="txt" maxlength="30" [(ngModel)]="nickname"
+                placeholder="How should we list you?"></div>
+        <strong>I will...</strong>
+        <label class="item" *ngFor="let o of options" [class.done]="picked.has(o)">
+            <input type="checkbox" [checked]="picked.has(o)" (change)="toggle(o)"> {{ o }}
+        </label>
+        <p *ngIf="error" class="notice bad">{{ error }}</p>
+        <button class="btn" [disabled]="!nickname.trim() || !picked.size" (click)="submit()">Save my pledge</button>
+    </section>
+
+    <section class="panel" *ngIf="sent">
+        <h2>Pledge saved</h2>
+        <p>Thank you, {{ nickname }}. Share the campaign with one person today.</p>
+    </section>
+
+    <section class="section" *ngIf="recent.length">
+        <h3>Recent pledges ({{ total }} total)</h3>
+        <div class="row"><span class="chip" *ngFor="let r of recent">{{ r.nickname }} · {{ r.commitments }}
+                habits</span></div>
+    </section>
+</div>
