@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://password-hygiene-k9sn.onrender.com/api'
+  baseUrl: 'https://password-hygiene-k9sn.onrender.com'
 };
 
 /*
