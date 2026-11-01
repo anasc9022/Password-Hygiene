@@ -10,6 +10,7 @@ import { QuizComponent } from './components/quiz/quiz.component';
 import { ChecklistComponent } from './components/checklist/checklist.component';
 import { PledgeComponent } from './components/pledge/pledge.component';
 import { FormsModule } from '@angular/forms';
+import { VaultComponent } from './components/vault/vault.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { FormsModule } from '@angular/forms';
     LabComponent,
     QuizComponent,
     ChecklistComponent,
-    PledgeComponent
+    PledgeComponent,
+    VaultComponent
   ],
   imports: [
     BrowserModule,

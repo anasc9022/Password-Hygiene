@@ -1,0 +1,118 @@
+<!-- Locked -->
+<div class="page narrow" *ngIf="!v.unlocked">
+    <h1>Password vault</h1>
+    <p class="lead">Zero-knowledge storage. Items are encrypted in this browser with a key made from your master
+        password. The server only ever stores ciphertext.</p>
+    <section class="panel">
+        <div class="tabs">
+            <button type="button" [class.on]="mode === 'unlock'" (click)="mode = 'unlock'; error = ''">Unlock</button>
+            <button type="button" [class.on]="mode === 'create'" (click)="mode = 'create'; error = ''">Create
+                vault</button>
+        </div>
+        <form class="stack" (ngSubmit)="submit()">
+            <label>Username or e-mail<input class="txt" name="u" [(ngModel)]="username" autocomplete="username"
+                    maxlength="64"></label>
+            <label>Master password<input class="txt" name="m" type="password" [(ngModel)]="master"
+                    [attr.autocomplete]="mode === 'create' ? 'new-password' : 'current-password'"></label>
+            <ng-container *ngIf="mode === 'create'">
+                <div class="meter"><span [style.width.%]="master ? (analyze(master).score + 1) * 20 : 0"
+                        [ngClass]="'s' + analyze(master).score"></span></div>
+                <div class="meter-meta"><strong>{{ master ? analyze(master).label : 'Choose a long passphrase'
+                        }}</strong><span>Needs Strong or better</span></div>
+                <label>Confirm master password<input class="txt" name="c" type="password" [(ngModel)]="again"
+                        autocomplete="new-password"></label>
+                <p class="notice warn">There is no password reset. If you forget your master password, your vault cannot
+                    be recovered.</p>
+            </ng-container>
+            <p class="notice bad" *ngIf="error">{{ error }}</p>
+            <div><button class="btn" type="submit"
+                    [disabled]="busy || !username || !master || (mode === 'create' && !canCreate)">
+                    {{ busy ? 'Working…' : (mode === 'create' ? 'Create vault' : 'Unlock vault') }}</button></div>
+        </form>
+    </section>
+</div>
+
+<!-- Unlocked -->
+<div class="page" *ngIf="v.unlocked">
+    <div class="row between" style="margin-top:0">
+        <h1>Vault</h1>
+        <div class="row"><span class="muted">Signed in as {{ v.username }}</span><button class="ghost"
+                (click)="v.lock()">Lock now</button></div>
+    </div>
+    <p class="lead">Auto-locks after 5 minutes of inactivity. Copied secrets are cleared from the clipboard after 20
+        seconds.</p>
+
+    <section class="panel health">
+        <div class="ring" [style.--v]="v.health"><span>{{ v.health }}%</span></div>
+        <div>
+            <h3>Vault health</h3>
+            <p class="muted" style="margin:0 0 .75rem">
+                {{ v.count('Weak') }} weak · {{ v.count('Reused') }} reused · {{ v.count('Old') }} older than 6
+                months<span *ngIf="v.scanned"> · {{ v.count('Breached') }} breached</span>
+            </p>
+            <div class="row">
+                <button class="ghost small" (click)="v.scanBreaches()" [disabled]="v.scanning || !v.entries.length">{{
+                    v.scanning ? 'Scanning…' : 'Scan for breaches' }}</button>
+                <button class="ghost small" (click)="download()">Export encrypted backup</button>
+            </div>
+            <p class="notice warn" *ngIf="v.scanFailed">Breach scan failed. Check the API is running.</p>
+        </div>
+    </section>
+
+    <div class="row toolbar">
+        <input class="txt" style="flex:1" [(ngModel)]="search" placeholder="Search by site or username"
+            aria-label="Search vault">
+        <button class="btn" (click)="startAdd()">Add item</button>
+    </div>
+
+    <p class="notice" [ngClass]="note.kind" *ngIf="note">{{ note.text }}</p>
+
+    <section class="panel" *ngIf="form" style="margin-bottom:1rem">
+        <h3>{{ form.id ? 'Edit item' : 'New item' }}</h3>
+        <div class="stack">
+            <label>Site or app<input class="txt" [(ngModel)]="form.site" maxlength="80"></label>
+            <label>Username or email<input class="txt" [(ngModel)]="form.username" maxlength="120"
+                    autocomplete="off"></label>
+            <label>Password
+                <span class="field" style="margin:0"><input type="text" [(ngModel)]="form.password" maxlength="200"
+                        autocomplete="off" spellcheck="false">
+                    <button type="button" class="ghost" (click)="fill()">Generate</button></span>
+            </label>
+            <div class="meter-meta" *ngIf="form.password" style="margin:0"><strong>{{ analyze(form.password).label
+                    }}</strong><span>{{ analyze(form.password).entropy }} bits</span></div>
+            <label>Notes<textarea class="txt" rows="2" [(ngModel)]="form.notes" maxlength="500"></textarea></label>
+            <div class="row">
+                <button class="btn" (click)="saveForm()" [disabled]="!form.site.trim() || !form.password">Save
+                    encrypted</button>
+                <button class="ghost" (click)="form = null">Cancel</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel" *ngIf="!filtered.length">
+        <p class="muted" style="margin:0">
+            {{ v.entries.length ? 'No items match your search.' : 'Your vault is empty. Add your first item.' }}
+        </p>
+    </section>
+
+    <section class="panel" *ngIf="filtered.length" style="padding-top:.5rem;padding-bottom:.5rem">
+        <article class="entry" *ngFor="let e of filtered">
+            <div>
+                <strong>{{ e.site }}</strong>
+                <span *ngFor="let b of (v.issues[e.id] || [])" class="badge"
+                    [class.bad]="b === 'Weak' || b === 'Breached'">{{ b }}</span>
+                <div class="muted">{{ e.username }}</div>
+                <div class="secret">{{ shown[e.id] ? e.password : '••••••••••••' }}</div>
+                <div class="muted" *ngIf="e.notes">{{ e.notes }}</div>
+            </div>
+            <div class="row">
+                <button class="ghost small" (click)="shown[e.id] = !shown[e.id]">{{ shown[e.id] ? 'Hide' : 'Show'
+                    }}</button>
+                <button class="ghost small" (click)="copy(e.username)">Copy user</button>
+                <button class="ghost small" (click)="copy(e.password)">Copy password</button>
+                <button class="ghost small" (click)="edit(e)">Edit</button>
+                <button class="ghost small" (click)="remove(e)">Delete</button>
+            </div>
+        </article>
+    </section>
+</div>

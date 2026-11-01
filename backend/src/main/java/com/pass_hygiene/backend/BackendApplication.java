@@ -19,8 +19,8 @@ public class BackendApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("https://password-hygiene-frontend.onrender.com")
-                        .allowedMethods("GET", "POST");
+                        .allowedOrigins("http://localhost:4200")
+                        .allowedMethods("GET", "POST", "PUT");
             }
         };
     }

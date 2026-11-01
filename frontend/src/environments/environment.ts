@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://password-hygiene-k9sn.onrender.com'
+  baseUrl: 'http://localhost:8080'
+  // baseUrl: 'https://password-hygiene-k9sn.onrender.com'
 };
 
 /*

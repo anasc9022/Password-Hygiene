@@ -9,6 +9,9 @@ export interface QuizResult { score: number; total: number; feedback: Feedback[]
 export interface PledgeView { nickname: string; commitments: number; }
 export interface Stats { pledges: number; recent: PledgeView[]; }
 
+export interface VaultSession { token: string; iv: string | null; blob: string | null; version: number; }
+export interface VaultPayload { iv: string; blob: string; version: number; }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,4 +33,14 @@ export class ApiService {
 
   breachRange(prefix: string) { return this.http.get(`${this.baseUrl}/breach/range/${prefix}`, { responseType: 'text' }); }
 
+  // ---- Vault ----
+  vaultSalt(username: string) { return this.http.get<{ salt: string }>(`${this.baseUrl}/vault/salt/${encodeURIComponent(username)}`); }
+
+  vaultRegister(username: string, salt: string, authKey: string) { return this.http.post<void>(`${this.baseUrl}/vault/register`, { username, salt, authKey }); }
+
+  vaultLogin(username: string, authKey: string) { return this.http.post<VaultSession>(`${this.baseUrl}/vault/login`, { username, authKey }); }
+
+  vaultSave(token: string, p: VaultPayload) { return this.http.put<{ version: number }>(`${this.baseUrl}/vault`, p, { headers: { Authorization: `Bearer ${token}` } }); }
+
+  vaultLogout(token: string) { return this.http.post<void>(`${this.baseUrl}/vault/logout`, {}, { headers: { Authorization: `Bearer ${token}` } }); }
 }

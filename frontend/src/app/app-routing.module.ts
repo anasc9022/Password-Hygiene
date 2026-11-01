@@ -5,9 +5,11 @@ import { LabComponent } from './components/lab/lab.component';
 import { ChecklistComponent } from './components/checklist/checklist.component';
 import { QuizComponent } from './components/quiz/quiz.component';
 import { PledgeComponent } from './components/pledge/pledge.component';
+import { VaultComponent } from './components/vault/vault.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'vault', component: VaultComponent },
   { path: 'lab', component: LabComponent },
   { path: 'quiz', component: QuizComponent },
   { path: 'checklist', component: ChecklistComponent },
